@@ -1,0 +1,10 @@
+* /src/main/main.norg/
+
+* outline
+  this is a folder for all of the main files, probably one will be for testing, and one for running the actual program
+
+* Test
+  tests some features makes sure everything is working well :)
+
+* Ntask
+  main file that will actually run the program

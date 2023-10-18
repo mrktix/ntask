@@ -1,9 +1,9 @@
-* /doc/back/config.norg/
+* /src/back/back.norg/
 
 * outline
-  this is basically just going to handle parsing the config, and storing everything in it
+  the backend of the program, handles reading & writing to files and that kinda stuff
 
-* Database
+* Config
 ** read()
    reads and parses the {/ ~/.config/norgtask/config}[config file] into a hashmap
    the format of the file is:
@@ -19,11 +19,11 @@
    @end
    internally, Database will store multiple hashmaps: one for each var type
 
-** path()
+** get_path()
    takes the name of a path variable, and returns it as a std::filesystem::path
 
-** int()
+** get_int()
    takes the name of an int var, and returns it's integer value
 
-** string()
+** get_str()
    takes the name of a string var, and returns a string

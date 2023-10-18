@@ -1,0 +1,7 @@
+* /src/general.norg/
+
+* outline
+  just a file specifying general style and stuff
+
+* contents
+  max line length in this project is 90 chars (in source code, this does not include docs)
