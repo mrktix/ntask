@@ -1,0 +1,29 @@
+* /doc/back/config.norg/
+
+* outline
+  this is basically just going to handle parsing the config, and storing everything in it
+
+* Database
+** read()
+   reads and parses the {/ ~/.config/norgtask/config}[config file] into a hashmap
+   the format of the file is:
+   @code cfg
+   # comment, lines starting with '#' are ignored
+   var-type var-name value
+   @end
+   var-type can be: \{path, int, string\}
+   the variable name will never contain spaces
+   current options:
+   @code cfg
+   path workspace ~/wiki/ (the directory in which all of your norg files are (program will only read the files that are nested one folder lower than this))
+   @end
+   internally, Database will store multiple hashmaps: one for each var type
+
+** path()
+   takes the name of a path variable, and returns it as a std::filesystem::path
+
+** int()
+   takes the name of an int var, and returns it's integer value
+
+** string()
+   takes the name of a string var, and returns a string
