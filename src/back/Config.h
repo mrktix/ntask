@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
@@ -11,6 +12,8 @@
 class Config {
     public:
         Config();
+
+        int Test();
 
         void Read();
         void Read(std::filesystem::path config_file);
@@ -24,4 +27,4 @@ class Config {
         std::unordered_map<std::string, std::string> strs;
         std::unordered_map<std::string, std::filesystem::path> paths;
         std::unordered_map<std::string, int> ints;
-}
+};

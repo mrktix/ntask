@@ -3,15 +3,17 @@
 * outline
   the backend of the program, handles reading & writing to files and that kinda stuff
 
-* Config
+* Config {/ ~/repos/ntask/src/back/Config.cpp}
 ** read()
    reads and parses the {/ ~/.config/norgtask/config}[config file] into a hashmap
    the format of the file is:
    @code cfg
    # comment, lines starting with '#' are ignored
+   # THERE CAN ONLY BE ONE SPACE AT A TIME
+   # SO DONT DO THIS: 'var-type   var-name value'
    var-type var-name value
    @end
-   var-type can be: \{path, int, string\}
+   var-type can be: \{path, int, str\}
    the variable name will never contain spaces
    current options:
    @code cfg
