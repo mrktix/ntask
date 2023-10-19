@@ -13,8 +13,6 @@ class Config {
     public:
         Config();
 
-        int Test();
-
         void Read();
         void Read(std::filesystem::path config_file);
 

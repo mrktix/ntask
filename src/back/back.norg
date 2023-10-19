@@ -3,8 +3,12 @@
 * outline
   the backend of the program, handles reading & writing to files and that kinda stuff
 
-* Config {/ ~/repos/ntask/src/back/Config.cpp}
-** read()
+* Config 
+** links
+   {/ ~/repos/ntask/src/back/Config.cpp}[Config.cpp]
+   {/ ~/repos/ntask/src/back/Config.h}[Config.h]
+
+** Read()
    reads and parses the {/ ~/.config/norgtask/config}[config file] into a hashmap
    the format of the file is:
    @code cfg
@@ -29,3 +33,56 @@
 
 ** get_str()
    takes the name of a string var, and returns a string
+
+* Tasklist
+  basically just has a list of all tasks, and has methods to access and modify them
+  should be able to reload tasks from source seamlessly, meaning that it reads deterministically
+
+* Timestamp
+  a class that represemts a timestamp, allowing conversion to many formats useful to this project
+
+** ToUnix(string datestr)
+
+** ToStr(long unixtime)
+
+* Task
+  a class representing one task, with methods to access its data and modify it as well
+  keeps track of all its data, and also what file
+** links
+   {/ ~/repos/ntask/src/back/Task.cpp}[Task.cpp]
+   {/ ~/repos/ntask/src/back/Task.h}[Task.h]
+
+** get_name()
+   returns the name of the task
+
+** get_tag()
+   returns the tag of the task
+
+** get_end_date()
+   returns the due date of the task, and if task has no due date, returns the date 2000 years into the future
+
+** get_done_date()
+   returns 0 if the task is not done, otherwise returns a long that is the unix timestamp of when the task was finished
+
+** get_folder()
+   returns the name of the folder that the task is in
+
+** get_file()
+   returns the filename of the norg file the task is in
+
+** set_done_date()
+
+** Read(string line, path source_file)
+   takes a string containing the contents of a @code rust task block (no newlines)
+   takes the path to its source file so that it can edit itself later
+   resets all internal variables, and sets them to whatever the passed string specifies
+   @code rust exampletask
+   "task name"
+   <tag>
+   {2020.12.30} // due date
+   [2020.12.29*23:54] // done date
+   @end
+
+** Write()
+   in its source file, finds the code block that defines it
+   and replaces its contents with whatever the current state of the task is

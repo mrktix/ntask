@@ -1,40 +1,6 @@
 #include "Config.h"
 
-Config::Config() {
-
-}
-
-int Config::Test() {
-    int fails = 0;
-    Read();
-
-    std::string str = get_str("username");
-    std::cout << "Config::Test get_str(\"username\") = " << str << std::endl;
-    if (str == "arleok") {
-        std::cout << "success" << std::endl;
-    } else {
-        std::cout << "fail" << std::endl;
-        fails++;
-    }
-
-    int integer = get_int("color1");
-    std::cout << "Config::Test get_int(\"color1\") = " << integer << std::endl;
-    if (integer == 5) {
-        std::cout << "success" << std::endl;
-    } else {
-        std::cout << "fail" << std::endl;
-        fails++;
-    }
-
-    std::string path = get_path("workspace").string();
-    std::cout << "Config::Test get_path(\"workspace\") = " << path << std::endl;
-    if (path == "/home/arleok/wiki/") {
-        std::cout << "success" << std::endl;
-    } else {
-        std::cout << "fail" << std::endl;
-        fails++;
-    }
-}
+Config::Config() {}
 
 void Config::Read() {
     std::string config_str = getenv("XDG_CONFIG_HOME");
@@ -64,7 +30,7 @@ void Config::Read(std::filesystem::path config_file) {
         if (!ParseLine(line)) {
             file.close();
             throw std::runtime_error
-                ("failed to parse"+config_file.string()+":"+line_number+" '"+line+"'");
+                ("failed to parse"+config_file.string()+" : "+std::to_string(line_number)+" '"+line+"'");
         }
     }
 
@@ -91,12 +57,12 @@ bool Config::ParseLine(std::string line) {
 
             case stage_name:
                 if (line[i] == ' ') parsing_stage = stage_value;
-                else type += line[i];
+                else name += line[i];
                 break;
 
             case stage_value:
                 if (line[i] == ' ') parsing_stage = stage_value;
-                else type += line[i];
+                else value += line[i];
                 break;
         }
     }
