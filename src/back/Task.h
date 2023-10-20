@@ -15,8 +15,8 @@ class Task {
         std::string get_tag() const;
         std::string get_folder() const;
         std::string get_file() const;
-        long get_end_date() const;
-        long get_done_date() const;
+        long get_date() const;
+        bool is_done() const;
 
         void set_done_date(long new_done_date);
 
@@ -27,8 +27,8 @@ class Task {
 
         std::string name;
         std::string tag;
-        long end_date;
-        long done_date;
+        long date;
+        bool done;
 
         static long future_date;
 };

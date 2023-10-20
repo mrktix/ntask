@@ -8,8 +8,8 @@ void Task::Read(std::string definition, std::filesystem::path source_file) {
     this->source_file = source_file;
     name = "";
     tag = "";
-    end_date = future_date;
-    done_date = 0;
+    done = false;
+    date = 0;
 
     std::string end_date_parse = "";
     std::string done_date_parse = "";

@@ -40,10 +40,23 @@
 
 * Timestamp
   a class that represemts a timestamp, allowing conversion to many formats useful to this project
+** links
+   {/ ~/repos/ntask/src/back/Timestamp.cpp}[Timestamp.cpp]
+   {/ ~/repos/ntask/src/back/Timestamp.h}[Timestamp.h]
 
-** ToUnix(string datestr)
+** Read(long unixtime)
+** Read(string datestr) "2023.10.19*08:30"
 
-** ToStr(long unixtime)
+** get_unixtime()
+   a long containing seconds since epoch
+** get_year()
+   int '2023'
+** get_month()
+   int '1-12'
+** get_date()
+   int '1-31'
+** get_day()
+   int '1-7' (1 being monday)
 
 * Task
   a class representing one task, with methods to access its data and modify it as well
@@ -58,11 +71,13 @@
 ** get_tag()
    returns the tag of the task
 
-** get_end_date()
-   returns the due date of the task, and if task has no due date, returns the date 2000 years into the future
+** get_date()
+   returns the important date of the task:
+   - if the task is not done, returns the due date
+   - if the task is done, returns the date it was finished
 
-** get_done_date()
-   returns 0 if the task is not done, otherwise returns a long that is the unix timestamp of when the task was finished
+** is_done()
+   boolean, true if this task is done, false if it still needs to be completed
 
 ** get_folder()
    returns the name of the folder that the task is in
@@ -70,7 +85,9 @@
 ** get_file()
    returns the filename of the norg file the task is in
 
-** set_done_date()
+** Complete()
+   changes the task to done
+   gets the current date, and writes it into the task definition
 
 ** Read(string line, path source_file)
    takes a string containing the contents of a @code rust task block (no newlines)
