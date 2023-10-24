@@ -23,12 +23,13 @@ class Task {
 
     private:
         void Write() const;
-        void LineNumber() const;
+        int LineNumber() const;
 
         std::filesystem::path source_file;
 
         std::string name;
         std::string tag;
-        Timestamp date;
+        Timestamp date_due;
+        Timestamp date_done;
         bool done;
 };

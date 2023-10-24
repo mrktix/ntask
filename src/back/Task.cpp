@@ -6,7 +6,7 @@ Task::Task(std::string definition, std::filesystem::path source_file) {
     tag = "";
     done = false;
 
-    std::string end_date_str = "";
+    std::string due_date_str = "";
     std::string done_date_str = "";
 
     enum stage {
@@ -43,7 +43,7 @@ Task::Task(std::string definition, std::filesystem::path source_file) {
             // check if the definition has ended, otherwise add to variable value
             case stage_end_date:
                 if (ch == '}') parsing_stage = stage_space;
-                else end_date_str += ch;
+                else due_date_str += ch;
                 break;
 
             // check if the definition has ended, otherwise add to variable value
@@ -55,30 +55,25 @@ Task::Task(std::string definition, std::filesystem::path source_file) {
     }
 
     // depending on whether task is done or not, parse out the date
+    date_due = Timestamp(due_date_str);
+
     if (done_date_str.empty()) {
-        // task is not done yet
         done = false;
-        date = Timestamp(end_date_str);
+        date_done = Timestamp(true); //futuredate
     } else {
-        // task is done
         done = true;
-        date = Timestamp(done_date_str);
+        date_done = Timestamp(done_date_str);
     }
 }
 
-Timestamp Task::get_date() const { return date; }
-
+Timestamp Task::get_date() const { return is_done()? date_done : date_due; }
 std::string Task::get_name() const { return name; }
-
 std::string Task::get_tag() const { return tag; }
-
+std::string Task::get_file() const { return source_file.stem().string(); }
+bool Task::is_done() const { return done; }
 std::string Task::get_folder() const { 
     return source_file.parent_path().filename().string();
 }
-
-std::string Task::get_file() const { return source_file.stem().string(); }
-
-bool Task::is_done() const { return done; }
 
 void Task::Complete() {
 
@@ -88,42 +83,48 @@ void Task::Write() const {
 
 }
 
-void Task::LineNumber() const {
+int Task::LineNumber() const {
     std::ifstream source_file_stream;
     source_file_stream.open(source_file);
     if (!source_file_stream.is_open())
         throw runtime_error("unable to open source file : " + source_file.string());
 
     enum { stage_space, stage_task } parsing_stage = stage_space;
-    bool current_task;
+    int line_number = 0;
+    bool found_match = false;
 
-    while (source_file_stream) {
+    while (source_file_stream) { line_number++;
+        // get a line, and trim whitespace on sides
         std::string line; getline(source_file_stream, line); boost::algorithm::trim(line);
 
         if (parsing_stage == stage_space) {
-            if (line == "@code rust task") { // check for start of a task block
-                parsing_stage = stage_task;
-                current_task = true;
-                continue;
-            }
-            // this line is ignored
-        } else { // parsing_stage == stage_task
-            if (line == "@end") { // check if it is the end of the bloc
-                if (current_task) { // no conflicts between definition and this task
+            // look for the start of a task block
+            if (line == "@code rust task") { parsing_stage = stage_task; }
+        } else {
+            // we got to end without leaving task parsing stage: the task matches
+            if (line == "@end") { found_match = true; break; }
 
-                }
-                parsing_stage = stage_space; continue;
-            }
-
-            if (line.find("\"") != -1) { // this line specifies name
-                if (line.find("\""+name+"\"") == -1) { // task name does not match
-                    
-
-                }
-
+            // check for conflicts in definition, if found, ignore rest of task
+            if (line.find("\"") != -1 && line.find("\""+name+"\"") == -1) {
+                // line contains a name definition but it doesn't match
+                parsing_stage = stage_space;
+            } else if (!is_done() &&
+                    line.find("{") != -1 && line.find("{"+date.get_str()+"}")) {
+                // line contains a due date definition but it doesn't match
+                parsing_stage = stage_space;
+            } else if (is_done() &&
+                    line.find("[") != -1 && line.find("["+date.get_str()+"]")) {
+                // line contains a done date definition but it doesn't match
+                parsing_stage = stage_space;
             }
         }
     }
 
     source_file_stream.close();
+
+    if (!found_match) { throw runtime_error
+        ("could not find task '"+get_name()+"' in file '"+source_file.string()+"'");
+    }
+
+    return line_number;
 }

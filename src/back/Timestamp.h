@@ -7,10 +7,14 @@
 class Timestamp {
     public:
         Timestamp();
+        Timestamp(bool future);
         Timestamp(long unixtime);
         Timestamp(std::string datestr);
 
+        std::string get_str() const;
         long get_unixtime() const;
+
+        bool is_future() const;
         int get_year() const;
         int get_month() const;
         int get_date() const;
