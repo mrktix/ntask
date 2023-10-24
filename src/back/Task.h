@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Timestamp.h"
+
+#include <boost/algorithm/string/trim.hpp>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -7,28 +10,25 @@
 
 class Task {
     public:
-        Task();
-
-        void Read(std::string definition, std::filesystem::path source_file);
+        Task(std::string definition, std::filesystem::path source_file);
 
         std::string get_name() const;
         std::string get_tag() const;
         std::string get_folder() const;
         std::string get_file() const;
-        long get_date() const;
+        Timestamp get_date() const;
         bool is_done() const;
 
-        void set_done_date(long new_done_date);
+        void Complete();
 
     private:
         void Write() const;
+        void LineNumber() const;
 
         std::filesystem::path source_file;
 
         std::string name;
         std::string tag;
-        long date;
+        Timestamp date;
         bool done;
-
-        static long future_date;
 };

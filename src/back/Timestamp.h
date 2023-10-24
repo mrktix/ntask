@@ -6,6 +6,7 @@
 
 class Timestamp {
     public:
+        Timestamp();
         Timestamp(long unixtime);
         Timestamp(std::string datestr);
 
@@ -14,9 +15,12 @@ class Timestamp {
         int get_month() const;
         int get_date() const;
         int get_day() const;
+        int get_hour() const;
+        int get_min() const;
 
     private:
         long current_unixtime() const;
+        void InitFuturetime();
         struct tm tm;
         static long futuretime;
 };

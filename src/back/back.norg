@@ -44,8 +44,10 @@
    {/ ~/repos/ntask/src/back/Timestamp.cpp}[Timestamp.cpp]
    {/ ~/repos/ntask/src/back/Timestamp.h}[Timestamp.h]
 
-** Read(long unixtime)
-** Read(string datestr) "2023.10.19*08:30"
+** Timestamp(long unixtime)
+** Timestamp(string datestr) "2023.10.19*08:30"
+** Timestamp(bool future)
+   inits to futuretime, if true, 0time if false
 
 ** get_unixtime()
    a long containing seconds since epoch
@@ -57,6 +59,10 @@
    int '1-31'
 ** get_day()
    int '1-7' (1 being monday)
+** get_hour()
+   int '0-23'
+** get_min()
+   int '0-59'
 
 * Task
   a class representing one task, with methods to access its data and modify it as well
@@ -89,7 +95,7 @@
    changes the task to done
    gets the current date, and writes it into the task definition
 
-** Read(string line, path source_file)
+** Task(string line, path source_file)
    takes a string containing the contents of a @code rust task block (no newlines)
    takes the path to its source file so that it can edit itself later
    resets all internal variables, and sets them to whatever the passed string specifies
