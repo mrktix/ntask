@@ -110,6 +110,7 @@
    [2020.12.29*23:54] // done date
    @end
 
-** Write()
+** Write(bool replace_which\[4\])
    in its source file, finds the code block that defines it
    and replaces its contents with whatever the current state of the task is
+   the array means which fields to write: \{ name, due, done, tag \}

@@ -3,32 +3,28 @@
 #include <tuple>
 
 long Timestamp::futuretime = 0;
-// struct tm tm
 
-void Timestamp::InitFuturetime() {
-    if (futuretime == 0) futuretime = current_unixtime()+65000000000; // ~2000 years in future
-}
-
-Timestamp::Timestamp() {
-    long current_utime = current_unixtime();
-    tm = *std::localtime(&current_utime);
-    tm.tm_sec = 0;
-}
-
-Timestamp::Timestamp(bool future) {
-    InitFuturetime();
-    if (future) {
-        tm = *std::localtime(&futuretime);
-    } else {
-        tm = *std::localtime(0);
-    }
-    tm.tm_sec = 0;
-}
-
-Timestamp::Timestamp(long unixtime) {
-    InitFuturetime();
+void Timestamp::TmFromUnix(long unixtime) {
     tm = *std::localtime(&unixtime);
+
+    tm.tm_isdst = -1;
+    tm.tm_year += 1900;
+    tm.tm_mon += 1;
     tm.tm_sec = 0;
+}
+
+Timestamp::Timestamp() { InitFuturetime();
+    long current_utime = current_unixtime();
+    TmFromUnix(current_utime);
+}
+
+Timestamp::Timestamp(bool future) { InitFuturetime();
+    if (future) TmFromUnix(futuretime);
+    else TmFromUnix(0);
+}
+
+Timestamp::Timestamp(long unixtime) { InitFuturetime();
+    TmFromUnix(unixtime);
 }
 
 // datestr : "yyyy.mm.dd*hh:nn"
@@ -42,6 +38,8 @@ Timestamp::Timestamp(std::string datestr) {
     tm.tm_isdst = -1;
     tm.tm_year = tm.tm_mon = tm.tm_mday = tm.tm_hour = tm.tm_min = tm.tm_sec = 0;
 
+    int year, mon, date, hour, min, sec;
+
     for (int i = 0; i < datestr.length(); i++) {
         char ch = datestr[i];
 
@@ -49,6 +47,9 @@ Timestamp::Timestamp(std::string datestr) {
             switch (parsing_stage) {
                 case stage_year: parsing_stage = stage_month; break;
                 case stage_month: parsing_stage = stage_day; break;
+                case stage_day: break;
+                case stage_hour: break;
+                case stage_min: break;
             }
         } else if (ch == '*') {
             parsing_stage = stage_hour;
@@ -64,23 +65,54 @@ Timestamp::Timestamp(std::string datestr) {
             }
         }
     }
+
+    tm.tm_year -= 1900;
+    tm.tm_mon -= 1;
+
+    long unixtime = std::mktime(&tm);
+
+    TmFromUnix(unixtime);
 }
 
-long Timestamp::current_unixtime() const {
-    return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+bool Timestamp::operator==(const Timestamp& rhs) const {
+    return rhs.get_unixtime() == get_unixtime();
+}
+bool Timestamp::operator!=(const Timestamp& rhs) const {
+    return !(*this == rhs);
+}
+
+long Timestamp::current_unixtime() {
+    return std::chrono::duration_cast<std::chrono::seconds>
+        (std::chrono::system_clock::now().time_since_epoch())
+        .count();
 }
 
 std::string Timestamp::get_str() const {
-    std::string ret;
-    ret += std::to_string(get_year());
-    ret += ".";
-    ret += std::to_string(get_month());
-    ret += ".";
-    ret += std::to_string(get_date());
-    ret += "*";
-    ret += std::to_string(get_hour());
-    ret += ":";
-    ret += std::to_string(get_min());
+    return get_str(true);
+}
+
+std::string Timestamp::get_str(bool truncate) const {
+    std::string year = std::to_string(get_year());
+    std::string mon = std::to_string(get_month());
+    std::string date = std::to_string(get_date());
+    std::string hour = std::to_string(get_hour());
+    std::string min = std::to_string(get_min());
+    std::string ret = "";
+
+    if (year.size() == 1) year = "000" + year;
+    if (year.size() == 2) year = "00" + year;
+    if (year.size() == 3) year = "0" + year;
+
+    if (mon.size() == 1)  mon  = "0" + mon;
+    if (date.size() == 1) date = "0" + date;
+    if (hour.size() == 1) hour = "0" + hour;
+    if (min.size() == 1)  min  = "0" + min;
+
+    if (!truncate||min  != "00") { if (min  != "00") truncate=false; ret = ":"+min +ret; }
+    if (!truncate||hour != "00") { if (hour != "00") truncate=false; ret = "*"+hour+ret; }
+    if (!truncate||date != "00") { if (date != "00") truncate=false; ret = "."+date+ret; }
+    if (!truncate||mon  != "00") { if (mon  != "00") truncate=false; ret = "."+mon +ret; }
+    if (!truncate||year!="0000") { if (year!="0000") truncate=false; ret =     year+ret; }
 
     return ret;
 }
@@ -94,9 +126,19 @@ long Timestamp::get_unixtime() const {
 }
 
 bool Timestamp::is_future() const { return get_unixtime() == futuretime; }
+bool Timestamp::is_zero() const { return get_unixtime() == 0; }
 int Timestamp::get_year() const { return tm.tm_year; }
 int Timestamp::get_month() const { return tm.tm_mon; }
 int Timestamp::get_date() const { return tm.tm_mday; }
-int Timestamp::get_day() const { /*week day*/ return (tm.tm_wday == 0)? 7 : tm.tm_wday; }
+int Timestamp::get_day() const { return (tm.tm_wday == 0)? 7 : tm.tm_wday; } // weekday
 int Timestamp::get_hour() const { return tm.tm_hour; }
 int Timestamp::get_min() const { return tm.tm_min; }
+
+// private
+void Timestamp::InitFuturetime() {
+    if (futuretime == 0) {
+        futuretime = current_unixtime()+94672800000; // 3000 years in future
+        futuretime -= futuretime%60; // truncate off seconds
+    }
+}
+

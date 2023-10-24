@@ -1,0 +1,7 @@
+# this file is a default config for ntask, used for testing
+
+path workspace ~/wiki/
+
+int color1 5
+
+str username arleok

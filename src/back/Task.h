@@ -6,7 +6,10 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <regex>
+#include <sstream>
 #include <stdexcept>
+#include <vector>
 
 class Task {
     public:
@@ -22,8 +25,11 @@ class Task {
         void Complete();
 
     private:
-        void Write() const;
+        void Write(bool replace_which[4]) const;
         int LineNumber() const;
+
+        static std::string field_start_char[4];
+        static std::string field_end_char[4];
 
         std::filesystem::path source_file;
 

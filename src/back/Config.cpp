@@ -11,8 +11,7 @@ void Config::Read() {
 }
 
 void Config::Read(std::filesystem::path config_file) {
-    std::ifstream file;
-    file.open(config_file);
+    std::ifstream file(config_file);
     if (!file.is_open())
         throw std::runtime_error("unable to open config file: " + config_file.string());
 

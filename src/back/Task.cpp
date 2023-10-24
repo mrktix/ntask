@@ -1,5 +1,8 @@
 #include "Task.h"
 
+std::string Task::field_start_char[4] = { "\"", "{", "[", "<" };
+std::string Task::field_end_char[4] = { "\"", "}", "]", ">" };
+
 Task::Task(std::string definition, std::filesystem::path source_file) {
     this->source_file = source_file;
     name = "";
@@ -76,55 +79,175 @@ std::string Task::get_folder() const {
 }
 
 void Task::Complete() {
-
+    done = true;
+    date_done = Timestamp();
+    Write((bool[4]){ false, false, true, false });
 }
 
-void Task::Write() const {
+void Task::Write(bool replace_which[4]) const {
+    // read source_file into text_vec
+    std::ifstream file_in(source_file);
+    if (!file_in.is_open())
+        throw std::runtime_error("unable to open norg file: " + source_file.string());
+    std::vector<std::string> text_vec;
+    while(file_in) {
+        std::string line; std::getline(file_in, line);
+        text_vec.push_back(line);
+    }
+    file_in.close();
 
+    bool replaced_which[4] = { false, false, false, false };
+    std::string field_value[4] = { "", "", "", "" };
+
+    for (int i = 0; i < 4; i++) {
+        if (!replace_which[i]) continue; // fields that won't be replaced don't matter
+        
+        switch (i) {
+            case 0: field_value[i] = get_name(); break;
+            case 1: field_value[i] = date_due.get_str(); break;
+            case 2: field_value[i] = date_done.get_str(); break;
+            case 3: field_value[i] = get_tag(); break;
+        }
+    }
+
+    // loop through the definition block, and replace any definitions with current values
+    int definition_start_line = LineNumber();
+    int definition_end_line = definition_start_line + 1;
+    for (int i = definition_start_line; i < text_vec.size(); i++) {
+        // check for the end of the definition
+        if (boost::algorithm::trim_copy(text_vec[i]) == "@end") {
+            definition_end_line = i; break;
+        }
+        
+        // loop thru the 4 fields and replace if necessary
+        for (int j = 0; j < 4; j++) {
+            if (!replace_which[j] || replaced_which[j])
+                continue; // not supposed be to or already has been replaced
+
+            if (text_vec[i].find(field_start_char[j]) == -1 || text_vec[i].find(field_end_char[j]) == -1)
+                continue; // this line doesn't define this field
+
+            // replace the definition with the current val
+            std::regex match(field_start_char[j] + ".*" + field_end_char[j]);
+            std::string replace = field_start_char[j] + field_value[j] + field_end_char[j];
+            text_vec[i] = std::regex_replace(text_vec[i], match, replace);
+            replaced_which[j] = true;
+        }
+    }
+
+    // count the spaces at the start of a sample line
+    std::string sample_line = text_vec[definition_start_line];
+    std::string indent_str = sample_line.substr(0, sample_line.find_first_not_of(' '));
+
+    // if we were meant to write a field, but it has not been written
+    // (can occur when the feild was previously undefined)
+    // we insert a new line that defines the field
+    for (int i = 0; i < 4; i++) {
+        if (!replace_which[i] || replaced_which[i])
+            continue; // not supposed be to or already has been replaced
+
+        // get the line where you should insert the field
+        int insert_index = 0;
+        switch (i) {
+            case 0: insert_index = definition_start_line+1; break;
+            case 1: insert_index = definition_start_line+2; break;
+            case 2: insert_index = definition_end_line-1; break;
+            case 3: insert_index = definition_end_line-1; break;
+        }
+
+        // insert an indented field definition into the vector
+        text_vec.insert(text_vec.begin()+insert_index, indent_str + field_value[i]);
+        replaced_which[i] = true;
+    }
+
+    // write text_vec to source_file, overriding anything there previously
+    std::ofstream file_out(source_file, std::ios::trunc);
+    std::string text_string;
+    for (std::string text_line : text_vec) {
+        text_string += text_line + "\n";
+    }
+    text_string.pop_back(); // remove trailing newline
+    file_out << text_string;
+    file_out.close();
 }
 
 int Task::LineNumber() const {
     std::ifstream source_file_stream;
     source_file_stream.open(source_file);
     if (!source_file_stream.is_open())
-        throw runtime_error("unable to open source file : " + source_file.string());
+        throw std::runtime_error("unable to open source file : " + source_file.string());
 
     enum { stage_space, stage_task } parsing_stage = stage_space;
+    
+    // false: feild not checked, true: field matches
+    bool field_status[4] = { false, false, false, false };
     int line_number = 0;
-    bool found_match = false;
+    int current_block_start_line = 0;
 
     while (source_file_stream) { line_number++;
         // get a line, and trim whitespace on sides
         std::string line; getline(source_file_stream, line); boost::algorithm::trim(line);
 
         if (parsing_stage == stage_space) {
-            // look for the start of a task block
-            if (line == "@code rust task") { parsing_stage = stage_task; }
+            // when we find a task, save starting line and start looking thru it
+            if (line == "@code rust task") { 
+                parsing_stage = stage_task; 
+                current_block_start_line = line_number;
+            }
         } else {
-            // we got to end without leaving task parsing stage: the task matches
-            if (line == "@end") { found_match = true; break; }
+            if (line == "@end") { 
+                // if any field matched, set any_match to true
+                bool any_match = false;
+                for (int status : field_status) { if (status) {
+                    any_match = true;
+                break; }}
 
-            // check for conflicts in definition, if found, ignore rest of task
-            if (line.find("\"") != -1 && line.find("\""+name+"\"") == -1) {
-                // line contains a name definition but it doesn't match
+                // if there were any matches, return the line number
+                if (any_match) {
+                    source_file_stream.close();
+                    return current_block_start_line;
+                }
+
+                // end of a non matching task block, reset status and move to next line
+                for (int i = 0; i < 4; i++) field_status[i] = false;
                 parsing_stage = stage_space;
-            } else if (!is_done() &&
-                    line.find("{") != -1 && line.find("{"+date.get_str()+"}")) {
-                // line contains a due date definition but it doesn't match
-                parsing_stage = stage_space;
-            } else if (is_done() &&
-                    line.find("[") != -1 && line.find("["+date.get_str()+"]")) {
-                // line contains a done date definition but it doesn't match
-                parsing_stage = stage_space;
+                continue;
+            }
+
+            // loop thru the fields, and check if this line matches/conflicts
+            for (int i = 0; i < 4; i++) {
+                std::string start_ch = field_start_char[i], end_ch = field_end_char[i];
+
+                // make sure this line defines field 'i'
+                if (line.find(start_ch) == -1 || line.find(end_ch) == -1) continue;
+
+                bool match;
+                switch (i) {
+                    case 0: // name
+                        match = line.find(start_ch+get_name()+end_ch) != -1; break;
+                    case 3: // tag
+                        match = line.find(start_ch+get_tag()+end_ch) != -1; break;
+                    default: // {1,2} due or done (dates)
+                        size_t start = line.find(start_ch) + 1;
+                        size_t len = line.find(end_ch) - start;
+                        match = Timestamp(line.substr(start, len)) == date_due;
+                        break;
+                }
+
+                if (match) {
+                    field_status[i] = true;
+                } else {
+                    // there is a conflict, stop checking this task
+                    parsing_stage = stage_space;
+                    break;
+                }
             }
         }
     }
 
     source_file_stream.close();
 
-    if (!found_match) { throw runtime_error
+    // if we got thru file without finding the task, throw an err
+    throw std::runtime_error
         ("could not find task '"+get_name()+"' in file '"+source_file.string()+"'");
-    }
-
-    return line_number;
 }
