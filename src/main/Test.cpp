@@ -28,6 +28,33 @@ int TaskTest(std::string classname) {
     try { std::filesystem::remove(working_file); } catch (...) {}
     std::filesystem::copy_file(original_file, working_file);
 
+    print_call(classname, "Task", "2023.10.17 tjoes cups", "objptr");
+    Task tjoes = Task("\"buy peanut butter cups\" <shopping> {2023.10.17} [2024.10.15]", working_file);
+
+    print_call("tjoes", "get_name", "", tjoes.get_name());
+    make_sure(tjoes.get_name() == "buy peanut butter cups", fails);
+
+    print_call("tjoes", "get_tag", "", tjoes.get_tag());
+    make_sure(tjoes.get_tag() == "shopping", fails);
+
+    print_call("tjoes", "get_folder", "", tjoes.get_folder());
+    make_sure(tjoes.get_folder() == "tst", fails);
+
+    print_call("tjoes", "get_file", "", tjoes.get_file());
+    make_sure(tjoes.get_file() == "working", fails);
+
+    print_call("tjoes", "get_is_done", "", tjoes.is_done()?"true":"false");
+    make_sure(tjoes.get_file() == "working", fails);
+
+    print_call("tjoes", "get_date", "", tjoes.get_date().get_str());
+    Timestamp expected = Timestamp("2024.10.15");
+    make_sure(tjoes.get_date() == expected, fails);
+
+    print_call(classname, "Task", "2020.08.24*16:30 symbols & stuff", "objptr");
+    Task vlrnt = Task("\"become #1 {}[]<>*:;. in valorant\" {2020.08.24*16:30}", working_file);
+
+    // complete task
+
     return fails;
 }
 

@@ -15,10 +15,12 @@ this is a cool file
 
    @code rust task
    "buy peanut butter cups"
-   {2024.10.17}
+   <shopping>
+   {2023.10.17}
+   [2024.10.15]
    @end
 
 * Gaming
   @code rust task
-  "become #1 in valorant" {2020.08.24*16:30}
+  "become #1 {}[]<>*:;. in valorant" {2020.08.24*16:30}
   @end

@@ -1,5 +1,6 @@
 #include "../back/Config.h"
 #include "../back/Timestamp.h"
+#include "../back/Task.h"
 
 #include <iostream>
 #include <string>
