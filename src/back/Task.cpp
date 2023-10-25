@@ -149,14 +149,15 @@ void Task::Write(bool replace_which[4]) const {
         // get the line where you should insert the field
         int insert_index = 0;
         switch (i) {
-            case 0: insert_index = definition_start_line+1; break;
-            case 1: insert_index = definition_start_line+2; break;
-            case 2: insert_index = definition_end_line-1; break;
-            case 3: insert_index = definition_end_line-1; break;
+            case 0: insert_index = definition_start_line+1; break; //name
+            case 1: insert_index = definition_end_line;     break; //due
+            case 2: insert_index = definition_end_line;     break; //done
+            case 3: insert_index = definition_start_line+2; break; //tag
         }
 
         // insert an indented field definition into the vector
-        text_vec.insert(text_vec.begin()+insert_index, indent_str + field_value[i]);
+        text_vec.insert(text_vec.begin()+insert_index, 
+                indent_str + field_start_char[i] + field_value[i] + field_end_char[i]);
         replaced_which[i] = true;
     }
 

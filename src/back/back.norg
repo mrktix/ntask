@@ -35,8 +35,13 @@
    takes the name of a string var, and returns a string
 
 * Tasklist
+  {/ ~/repos/ntask/src/back/Tasklist.cpp}[Tasklist.cpp]
+  {/ ~/repos/ntask/src/back/Tasklist.h}[Tasklist.h]
   basically just has a list of all tasks, and has methods to access and modify them
   should be able to reload tasks from source seamlessly, meaning that it reads deterministically
+** Filter
+
+
 
 * Timestamp
   a class that represemts a timestamp, allowing conversion to many formats useful to this project
@@ -109,6 +114,8 @@
    {2020.12.30} // due date
    [2020.12.29*23:54] // done date
    @end
+   THESE CHARACTERS ARE RESERVED: "" <> {} []
+   IF YOU USE THEM INSIDE THE NAME ERRORS OCCUR
 
 ** Write(bool replace_which\[4\])
    in its source file, finds the code block that defines it

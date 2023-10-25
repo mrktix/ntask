@@ -1,6 +1,4 @@
 #include "Timestamp.h"
-#include <string>
-#include <tuple>
 
 long Timestamp::futuretime = 0;
 
@@ -13,24 +11,7 @@ void Timestamp::TmFromUnix(long unixtime) {
     tm.tm_sec = 0;
 }
 
-Timestamp::Timestamp() { InitFuturetime();
-    long current_utime = current_unixtime();
-    TmFromUnix(current_utime);
-}
-
-Timestamp::Timestamp(bool future) { InitFuturetime();
-    if (future) TmFromUnix(futuretime);
-    else TmFromUnix(0);
-}
-
-Timestamp::Timestamp(long unixtime) { InitFuturetime();
-    TmFromUnix(unixtime);
-}
-
-// datestr : "yyyy.mm.dd*hh:nn"
-Timestamp::Timestamp(std::string datestr) {
-    InitFuturetime();
-
+void Timestamp::TmFromStr(std::string datestr) {
     enum stage {
         stage_year, stage_month, stage_day, stage_hour, stage_min,
     } parsing_stage = stage_year;
@@ -72,6 +53,35 @@ Timestamp::Timestamp(std::string datestr) {
     long unixtime = std::mktime(&tm);
 
     TmFromUnix(unixtime);
+}
+
+void Timestamp::InitFuturetime() {
+    if (futuretime == 0) {
+        futuretime = current_unixtime()+94672800000; // 3000 years in future
+        futuretime -= futuretime%60; // truncate off seconds
+    }
+}
+
+Timestamp::Timestamp() { InitFuturetime();
+    long current_utime = current_unixtime();
+    TmFromUnix(current_utime);
+}
+
+Timestamp::Timestamp(bool future) { InitFuturetime();
+    if (future) TmFromUnix(futuretime);
+    else TmFromUnix(0);
+}
+
+Timestamp::Timestamp(long unixtime) { InitFuturetime();
+    TmFromUnix(unixtime);
+}
+
+Timestamp::Timestamp(const char datestr[]) { InitFuturetime();
+    TmFromStr((std::string) datestr);
+}
+
+Timestamp::Timestamp(std::string datestr) { InitFuturetime();
+    TmFromStr(datestr);
 }
 
 bool Timestamp::operator==(const Timestamp& rhs) const {
@@ -133,12 +143,3 @@ int Timestamp::get_date() const { return tm.tm_mday; }
 int Timestamp::get_day() const { return (tm.tm_wday == 0)? 7 : tm.tm_wday; } // weekday
 int Timestamp::get_hour() const { return tm.tm_hour; }
 int Timestamp::get_min() const { return tm.tm_min; }
-
-// private
-void Timestamp::InitFuturetime() {
-    if (futuretime == 0) {
-        futuretime = current_unixtime()+94672800000; // 3000 years in future
-        futuretime -= futuretime%60; // truncate off seconds
-    }
-}
-

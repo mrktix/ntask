@@ -1,18 +1,21 @@
 #pragma once
 
-#include <fstream>
-#include <time.h>
 #include <chrono>
+#include <fstream>
+#include <iostream>
+#include <time.h>
 
 class Timestamp {
     public:
         Timestamp();
         Timestamp(bool future);
         Timestamp(long unixtime);
+        Timestamp(const char datestr[]);
         Timestamp(std::string datestr);
 
         bool operator==(const Timestamp& rhs) const;
         bool operator!=(const Timestamp& rhs) const;
+        // need to add more operators
 
         static long current_unixtime();
 
@@ -32,6 +35,7 @@ class Timestamp {
     private:
         void InitFuturetime();
         void TmFromUnix(long unixtime);
+        void TmFromStr(std::string datestr);
         struct tm tm;
         static long futuretime;
 };
