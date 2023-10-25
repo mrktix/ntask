@@ -1,2 +1,22 @@
+  anything in \"quotes\" will fuzzy search in the name field with regex
+  
+  anything in \{braces\} will search thru the due date:
+  - \{2023\} will match anything in the year 2023
+  - \{2023.09\} will match anything in september 2023
+  - \{2023.09.01*12\} will match anything in september 1st 2023 between 12 and 13 hours
+  - \{\>2023\} prepending '\>' will match anything after that date as well
+  - \{\<2023\} prepending '\>' will match anything before
 
+  anything in \[brackets\] will search thru done date (so it does not show unfinished tasks)
+  - same searching system as due date \{\}, except writing just '\[\]' will match any done task
+
+  anything in \/slashes\/ will search thru the folder and file and tag 'sch/phy'
+  the folder and file are 100% match searches, and tag is fuzzy regex
+
+
+  I also want the editing of these filters to be really easy
+  pressing \{, \[, \/, or \' will clear that field and allow you to edit it
+  pressing \}, \], \*, or \" will enter editing mode on that field, but will keep the contents
+  you will be able to move thru that text with the arrow keys and stuff
+  and finish editing by hitting enter
 

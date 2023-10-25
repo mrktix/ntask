@@ -40,8 +40,12 @@
   basically just has a list of all tasks, and has methods to access and modify them
   should be able to reload tasks from source seamlessly, meaning that it reads deterministically
 ** Filter
-
-
+   - name
+   - folder
+   - file
+   - tag
+   - due
+   - done
 
 * Timestamp
   a class that represemts a timestamp, allowing conversion to many formats useful to this project
