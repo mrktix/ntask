@@ -31,16 +31,16 @@ class Tasklist {
         };
 
         enum StringType {
-            string_na,
+            string_na, // filter not applied, anything matches
             string_e, // exact match
             string_ge, // matches anything containing pattern
             string_fz, // fuzzy match (*p*a*t*t*e*r*n*)
         };
 
         enum DueStatus {
+            status_na, // filter not applied, anything matches
             status_done,
             status_due,
-            status_both,
         };
 
         void set_name_filter(std::string match);
@@ -54,16 +54,6 @@ class Tasklist {
         void set_file_type(StringType typ);
         void set_tag_type(StringType typ);
 
-        // exact value: 2023.10.13*10:11
-        //// task must have exactly this date to match
-        // incomplete: 2023.10.13
-        //// task must match everything specified
-        //// anything not defined in string can have any value, still matches
-        // greater than: >2023.10.13
-        //// fill out end with zeroes
-        //// match any task whose date is greater or equal to the specified date
-        // less than: <2023.10.13
-        //// same as above, match anything less than (not equal)
         void set_date_filter(Timestamp match);
         void set_date_type(DateType typ);
 

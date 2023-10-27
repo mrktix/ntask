@@ -47,6 +47,10 @@
    - due
    - done
 
+* Workspace
+  {/ ~/repos/ntask/src/back/Workspace.cpp}[Workspace.cpp]
+  {/ ~/repos/ntask/src/back/Workspace.h}[Workspace.h]
+
 * Timestamp
   a class that represemts a timestamp, allowing conversion to many formats useful to this project
 ** links
