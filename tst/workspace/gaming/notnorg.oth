@@ -1,0 +1,26 @@
+@document.meta
+title: sample
+description: 
+authors: arleok
+categories: 
+created: 2023-10-24
+updated: 2023-10-25
+version: 1.1.1
+@end
+
+this is a cool file
+
+* Shopping
+** Trader joe's
+
+   @code rust task
+   "buy peanut butter cups"
+   <shopping>
+   {2023.10.17}
+   [2024.10.15]
+   @end
+
+* Gaming
+  @code rust task
+  "become #1 *:;. in valorant" {2020.08.24*16:30}
+  @end

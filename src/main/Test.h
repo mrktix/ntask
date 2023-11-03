@@ -1,6 +1,7 @@
 #include "../back/Config.h"
 #include "../back/Timestamp.h"
 #include "../back/Task.h"
+#include "../back/Workspace.h"
 
 #include <iostream>
 #include <string>
@@ -8,6 +9,7 @@
 int ConfigTest(std::string classname);
 int TaskTest(std::string classname);
 int TimestampTest(std::string classname);
+int WorkspaceTest(std::string classname);
 
 void class_test(std::string testname, int fail, int& ref_total_fail);
 void make_sure(bool condition, int& ref_fail);

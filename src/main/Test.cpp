@@ -19,17 +19,25 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+int WorkspaceTest(std::string classname) {
+    int fails = 0;
+
+    Workspace workspc = Workspace(
+            (std::filesystem::path) "/home/arleok/repos/ntask/tst-working/workspace/",
+            "rust task"
+            );
+    
+    return fails;
+}
+
 int TaskTest(std::string classname) {
     int fails = 0;
 
-    std::filesystem::path original_file = "/home/arleok/repos/ntask/tst/sample.norg";
-    std::filesystem::path working_file = "/home/arleok/repos/ntask/tst/working.norg";
-
-    try { std::filesystem::remove(working_file); } catch (...) {}
-    std::filesystem::copy_file(original_file, working_file);
+    std::filesystem::path working_file = "/home/arleok/repos/ntask/tst-working/workspace/shopping/list.norg";
 
     print_call(classname, "Task", "2023.10.17 tjoes cups", "objptr");
-    Task tjoes = Task("\"buy peanut butter cups\" <shopping> {2023.10.17} [2024.10.15]", working_file);
+    Task tjoes = Task("\"buy peanut butter cups\" <shopping> {2023.10.17} [2024.10.15]"
+            , working_file);
 
     print_call("tjoes", "get_name", "", tjoes.get_name());
     make_sure(tjoes.get_name() == "buy peanut butter cups", fails);
@@ -38,22 +46,43 @@ int TaskTest(std::string classname) {
     make_sure(tjoes.get_tag() == "shopping", fails);
 
     print_call("tjoes", "get_folder", "", tjoes.get_folder());
-    make_sure(tjoes.get_folder() == "tst", fails);
+    make_sure(tjoes.get_folder() == "tst-working", fails);
 
     print_call("tjoes", "get_file", "", tjoes.get_file());
     make_sure(tjoes.get_file() == "working", fails);
 
-    print_call("tjoes", "get_is_done", "", tjoes.is_done()?"true":"false");
-    make_sure(tjoes.get_file() == "working", fails);
+    print_call("tjoes", "is_done", "", tjoes.is_done()?"true":"false");
+    make_sure(tjoes.is_done(), fails);
 
     print_call("tjoes", "get_date", "", tjoes.get_date().get_str());
-    Timestamp expected = Timestamp("2024.10.15");
-    make_sure(tjoes.get_date() == expected, fails);
+    make_sure(tjoes.get_date() == Timestamp("2024.10.15"), fails);
 
+
+    newline();
     print_call(classname, "Task", "2020.08.24*16:30 symbols & stuff", "objptr");
-    Task vlrnt = Task("\"become #1 {}[]<>*:;. in valorant\" {2020.08.24*16:30}", working_file);
+    Task vlrnt = Task("\"become #1 *:;. in valorant\" {2020.08.24*16:30}", working_file);
 
-    // complete task
+    print_call("vlrnt", "get_name", "", vlrnt.get_name());
+    make_sure(vlrnt.get_name() == "become #1 *:;. in valorant", fails);
+
+    print_call("vlrnt", "get_tag", "", vlrnt.get_tag());
+    make_sure(vlrnt.get_tag() == "", fails);
+
+    print_call("vlrnt", "get_folder", "", vlrnt.get_folder());
+    make_sure(vlrnt.get_folder() == "tst-working", fails);
+
+    print_call("vlrnt", "get_file", "", vlrnt.get_file());
+    make_sure(vlrnt.get_file() == "working", fails);
+
+    print_call("vlrnt", "is_done", "", vlrnt.is_done()?"true":"false");
+    make_sure(!vlrnt.is_done(), fails);
+
+    print_call("vlrnt", "get_date", "", vlrnt.get_date().get_str());
+    make_sure(vlrnt.get_date() == Timestamp("2020.08.24*16:30"), fails);
+
+    print_call("vlrnt", "Complete", "", "");
+    vlrnt.Complete();
+    std::cout << "MAKE SURE TO CHECK OUTPUT FILE" << std::endl;
 
     return fails;
 }
@@ -121,9 +150,9 @@ int ConfigTest(std::string classname) {
     int fails = 0;
     Config config;
     
-    print_call(classname, "Read", "/home/arleok/repos/ntask/tst/config");
+    print_call(classname, "Read", "/home/arleok/repos/ntask/tst-working/config");
     try {
-        config.Read((std::filesystem::path) "/home/arleok/repos/ntask/tst/config");
+        config.Read((std::filesystem::path) "/home/arleok/repos/ntask/tst-working/config");
     } catch (...) {
         make_sure(false, fails);
         newline();
