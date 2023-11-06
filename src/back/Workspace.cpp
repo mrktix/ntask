@@ -15,16 +15,21 @@ void Workspace::ParseWorkspace() {
     // loop through the workspace and parse files
     for (const std::filesystem::path norg_folder
             : std::filesystem::directory_iterator(norg_workspace)) {
+        std::cout << "checking potential folder path: " << norg_folder.string() << std::endl;
 
         if (!std::filesystem::is_directory(norg_folder)) continue; // only folders
         if (norg_folder.filename().string()[0] == '.') continue; // skip dotfiles
+        std::cout << "parsing folder: " << norg_folder.string() << std::endl;
 
         // loop through the files in the folders
         for (const std::filesystem::path norg_file
                 : std::filesystem::directory_iterator(norg_folder)) {
+            std::cout << "checking potential file path: " << norg_file.string() << std::endl;
 
+            // THIS SKIPS NORG FILES, CHECK DOCS IG
             if (!std::filesystem::is_regular_file(norg_file)) continue; // only files
             if (norg_file.extension().string() != "norg") continue; // only norgfiles
+            std::cout << "parsing norg file: " << norg_file.string() << std::endl;
 
             ParseFile(norg_file); // parse the files
         }

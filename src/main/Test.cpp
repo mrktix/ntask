@@ -14,6 +14,9 @@ int main(int argc, char** argv) {
     class_test("TaskTest", TaskTest("Task"), total_fail);
     newline();
 
+    class_test("WorkspaceTest", WorkspaceTest("Workspace"), total_fail);
+    newline();
+
     print_conclusion(total_fail);
 
     return 0;
@@ -31,8 +34,32 @@ int WorkspaceTest(std::string classname) {
 
     print_call(classname, "ParseWorkspace", "", "");
     workspc.ParseWorkspace();
+    print_call(classname, "get_blocks", "", "");
+    std::vector<Workspace::Block>* block_vec = workspc.get_blocks();
+    print_call("block_vec", "size", "", std::to_string(block_vec->size()));
+    make_sure(block_vec->size() == 4, fails);
     newline();
 
+    std::vector<Workspace::Block> target; Workspace::Block tmp;
+
+    tmp.content = "\"get 1000000 pts\" {2023.30.10*12}";
+    tmp.source_file = working_folder / "gaming/stuffs.norg";
+    target.push_back(tmp);
+
+    tmp.content = "\"sutff 100%\" <sutff> {2024}";
+    tmp.source_file = working_folder / "gaming/stuffs.norg";
+    target.push_back(tmp);
+
+    tmp.content = "\"buy peanut butter cups\" <shopping> {2023.10.17} [2024.10.15]";
+    tmp.source_file = working_folder / "shopping/list.norg";
+    target.push_back(tmp);
+
+    tmp.content = "\"become #1 *:;. in valorant\" {2020.08.24*16:30}";
+    tmp.source_file = working_folder / "shopping/list.norg";
+    target.push_back(tmp);
+
+    for (Workspace::Block block : *block_vec) {
+    }
     
     return fails;
 }
