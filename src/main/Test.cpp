@@ -22,10 +22,17 @@ int main(int argc, char** argv) {
 int WorkspaceTest(std::string classname) {
     int fails = 0;
 
-    Workspace workspc = Workspace(
-            (std::filesystem::path) "/home/arleok/repos/ntask/tst-working/workspace/",
-            "rust task"
-            );
+    std::filesystem::path working_folder = 
+        "/home/arleok/repos/ntask/tst-working/workspace/";
+
+    print_call(classname, "Workspace", "tst-work/workspace/, 'rust task'", "objptr");
+    Workspace workspc = Workspace(working_folder, "rust task");
+    newline();
+
+    print_call(classname, "ParseWorkspace", "", "");
+    workspc.ParseWorkspace();
+    newline();
+
     
     return fails;
 }
@@ -33,7 +40,8 @@ int WorkspaceTest(std::string classname) {
 int TaskTest(std::string classname) {
     int fails = 0;
 
-    std::filesystem::path working_file = "/home/arleok/repos/ntask/tst-working/workspace/shopping/list.norg";
+    std::filesystem::path working_file = 
+        "/home/arleok/repos/ntask/tst-working/workspace/shopping/list.norg";
 
     print_call(classname, "Task", "2023.10.17 tjoes cups", "objptr");
     Task tjoes = Task("\"buy peanut butter cups\" <shopping> {2023.10.17} [2024.10.15]"
@@ -46,10 +54,10 @@ int TaskTest(std::string classname) {
     make_sure(tjoes.get_tag() == "shopping", fails);
 
     print_call("tjoes", "get_folder", "", tjoes.get_folder());
-    make_sure(tjoes.get_folder() == "tst-working", fails);
+    make_sure(tjoes.get_folder() == "shopping", fails);
 
     print_call("tjoes", "get_file", "", tjoes.get_file());
-    make_sure(tjoes.get_file() == "working", fails);
+    make_sure(tjoes.get_file() == "list", fails);
 
     print_call("tjoes", "is_done", "", tjoes.is_done()?"true":"false");
     make_sure(tjoes.is_done(), fails);
@@ -69,10 +77,10 @@ int TaskTest(std::string classname) {
     make_sure(vlrnt.get_tag() == "", fails);
 
     print_call("vlrnt", "get_folder", "", vlrnt.get_folder());
-    make_sure(vlrnt.get_folder() == "tst-working", fails);
+    make_sure(vlrnt.get_folder() == "shopping", fails);
 
     print_call("vlrnt", "get_file", "", vlrnt.get_file());
-    make_sure(vlrnt.get_file() == "working", fails);
+    make_sure(vlrnt.get_file() == "list", fails);
 
     print_call("vlrnt", "is_done", "", vlrnt.is_done()?"true":"false");
     make_sure(!vlrnt.is_done(), fails);
@@ -83,6 +91,7 @@ int TaskTest(std::string classname) {
     print_call("vlrnt", "Complete", "", "");
     vlrnt.Complete();
     std::cout << "MAKE SURE TO CHECK OUTPUT FILE" << std::endl;
+    newline();
 
     return fails;
 }
@@ -210,7 +219,12 @@ void print_call(
         std::string func_str,
         std::string arg_str,
         std::string result) {
-    std::cout << class_str << "." << func_str << "(" << arg_str << ") = " << result << std::endl;
+
+    if (result.empty()) {
+        std::cout << class_str << "." << func_str << "(" << arg_str << ")" << std::endl;
+    } else {
+        std::cout << class_str << "." << func_str << "(" << arg_str << ") = " << result << std::endl;
+    }
 }
 
 void print_call( std::string class_str, std::string func_str, std::string arg_str) {
