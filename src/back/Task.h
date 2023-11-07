@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Timestamp.h"
+#include "Workspace.h"
 
 #include <boost/algorithm/string/trim.hpp>
 #include <filesystem>
@@ -14,6 +15,7 @@
 class Task {
     public:
         Task(std::string definition, std::filesystem::path source_file);
+        Task(Workspace::Block definition);
 
         std::string get_name() const;
         std::string get_tag() const;
@@ -24,7 +26,16 @@ class Task {
 
         void Complete();
 
+        bool operator<(const Task& rhs) const;
+        bool operator<=(const Task& rhs) const;
+        bool operator==(const Task& rhs) const;
+        bool operator>=(const Task& rhs) const;
+        bool operator>(const Task& rhs) const;
+        bool operator!=(const Task& rhs) const;
+
+
     private:
+        void Construct();
         void Write(bool replace_which[4]) const;
         int LineNumber() const;
 

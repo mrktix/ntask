@@ -2,6 +2,7 @@
 
 #include "Task.h"
 #include "Timestamp.h"
+#include "Workspace.h"
 
 #include <filesystem>
 #include <vector>
@@ -38,7 +39,7 @@ class Tasklist {
         };
 
         enum DueStatus {
-            status_na, // filter not applied, anything matches
+            status_na, // filter not applied, anything matches (done shows up after due)
             status_done,
             status_due,
         };
@@ -58,9 +59,11 @@ class Tasklist {
         void set_date_type(DateType typ);
 
     private:
-        std::vector<Task> tasks;
+        Workspace norg_workspace;
+        std::vector<Task> tasks_done; // sorted by date, greatest first
+        std::vector<Task> tasks_due; // sorted by date, least first
         std::vector<Task> tasks_filtered;
-        bool tasks_up_to_date;
+        bool filtered_tasks_up_to_date;
 
         DueStatus due_typ;
         std::string name_pat, folder_pat, file_pat, tag_pat;
@@ -68,5 +71,18 @@ class Tasklist {
         Timestamp date_cut;
         DateType date_typ;
 
+        bool match_filter(Task task) const;
+        bool match_name(Task task) const;
+        bool match_folder(Task task) const;
+        bool match_file(Task task) const;
+        bool match_tag(Task task) const;
+        bool match_date(Task task) const;
+        bool match_due(Task task) const;
+
+        // return true if pattern fuzzy matches into text
+        static bool string_fuzzy_match(std::string pattern, std::string text);
+
         void Filter(); // apply given filters and regenerate vector
+        void InsertUnfiltered(Task new_task); 
+        // insert a task into the corresponding vector, sorting only by date
 };

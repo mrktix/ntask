@@ -84,13 +84,6 @@ Timestamp::Timestamp(std::string datestr) { InitFuturetime();
     TmFromStr(datestr);
 }
 
-bool Timestamp::operator==(const Timestamp& rhs) const {
-    return rhs.get_unixtime() == get_unixtime();
-}
-bool Timestamp::operator!=(const Timestamp& rhs) const {
-    return !(*this == rhs);
-}
-
 long Timestamp::current_unixtime() {
     return std::chrono::duration_cast<std::chrono::seconds>
         (std::chrono::system_clock::now().time_since_epoch())
@@ -143,3 +136,15 @@ int Timestamp::get_date() const { return tm.tm_mday; }
 int Timestamp::get_day() const { return (tm.tm_wday == 0)? 7 : tm.tm_wday; } // weekday
 int Timestamp::get_hour() const { return tm.tm_hour; }
 int Timestamp::get_min() const { return tm.tm_min; }
+
+bool Timestamp::operator==(const Timestamp& rhs) const {
+    return rhs.get_unixtime() == get_unixtime();
+}
+bool Timestamp::operator<(const Timestamp& rhs) const {
+    return rhs.get_unixtime() < get_unixtime();
+}
+
+bool Timestamp::operator!=(const Timestamp& rhs) const { return !(*this == rhs); }
+bool Timestamp::operator>=(const Timestamp& rhs) const { return !(*this < rhs); }
+bool Timestamp::operator>(const Timestamp& rhs) const { return !(*this < rhs || *this == rhs); }
+bool Timestamp::operator<=(const Timestamp& rhs) const { return *this < rhs && *this == rhs; }

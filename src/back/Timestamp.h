@@ -13,9 +13,12 @@ class Timestamp {
         Timestamp(const char datestr[]);
         Timestamp(std::string datestr);
 
+        bool operator<(const Timestamp& rhs) const;
+        bool operator<=(const Timestamp& rhs) const;
         bool operator==(const Timestamp& rhs) const;
+        bool operator>=(const Timestamp& rhs) const;
+        bool operator>(const Timestamp& rhs) const;
         bool operator!=(const Timestamp& rhs) const;
-        // need to add more operators
 
         static long current_unixtime();
 

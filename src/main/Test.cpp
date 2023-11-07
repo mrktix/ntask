@@ -11,10 +11,10 @@ int main(int argc, char** argv) {
     class_test("TimestampTest", TimestampTest("Timestamp"), total_fail);
     newline();
 
-    class_test("TaskTest", TaskTest("Task"), total_fail);
+    class_test("WorkspaceTest", WorkspaceTest("Workspace"), total_fail);
     newline();
 
-    class_test("WorkspaceTest", WorkspaceTest("Workspace"), total_fail);
+    class_test("TaskTest", TaskTest("Task"), total_fail);
     newline();
 
     print_conclusion(total_fail);
@@ -40,27 +40,47 @@ int WorkspaceTest(std::string classname) {
     make_sure(block_vec->size() == 4, fails);
     newline();
 
-    std::vector<Workspace::Block> target; Workspace::Block tmp;
+    std::vector<Workspace::Block> target_vec; Workspace::Block tmp;
 
     tmp.content = "\"get 1000000 pts\" {2023.30.10*12}";
     tmp.source_file = working_folder / "gaming/stuffs.norg";
-    target.push_back(tmp);
+    target_vec.push_back(tmp);
 
     tmp.content = "\"sutff 100%\" <sutff> {2024}";
     tmp.source_file = working_folder / "gaming/stuffs.norg";
-    target.push_back(tmp);
+    target_vec.push_back(tmp);
 
     tmp.content = "\"buy peanut butter cups\" <shopping> {2023.10.17} [2024.10.15]";
     tmp.source_file = working_folder / "shopping/list.norg";
-    target.push_back(tmp);
+    target_vec.push_back(tmp);
 
     tmp.content = "\"become #1 *:;. in valorant\" {2020.08.24*16:30}";
     tmp.source_file = working_folder / "shopping/list.norg";
-    target.push_back(tmp);
+    target_vec.push_back(tmp);
 
     for (Workspace::Block block : *block_vec) {
+        print_call("block_vec", "element.source_file", "", 
+                block.source_file.parent_path().filename().string()+"/"+
+                block.source_file.filename().string());
+        print_call("block_vec", "element.content", "", block.content);
+
+        bool found = false;
+        for (int i = 0; i < target_vec.size(); i++) {
+            Workspace::Block target = target_vec[i];
+
+            if (block.content == target.content && 
+                    block.source_file == target.source_file) {
+                target_vec.erase(target_vec.begin() + i);
+                make_sure(true, fails);
+                found = true;
+                break; // found a match
+            }
+        }
+        if (!found) make_sure(false, fails);
+
+        newline();
     }
-    
+
     return fails;
 }
 

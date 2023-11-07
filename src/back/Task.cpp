@@ -3,7 +3,16 @@
 std::string Task::field_start_char[4] = { "\"", "{", "[", "<" };
 std::string Task::field_end_char[4] = { "\"", "}", "]", ">" };
 
+Task::Task(Workspace::Block definition) {
+    Construct(definition.content, definition.source_file);
+}
+
 Task::Task(std::string definition, std::filesystem::path source_file) {
+    Construct(definition, source_file);
+}
+
+// priv
+void Task::Construct(std::string definition, std::filesystem::path source_file) {
     this->source_file = source_file;
     name = "";
     tag = "";
@@ -84,6 +93,7 @@ void Task::Complete() {
     Write((bool[4]){ false, false, true, false });
 }
 
+// priv
 void Task::Write(bool replace_which[4]) const {
     // read source_file into text_vec
     std::ifstream file_in(source_file);
@@ -172,6 +182,7 @@ void Task::Write(bool replace_which[4]) const {
     file_out.close();
 }
 
+// priv
 int Task::LineNumber() const {
     std::ifstream source_file_stream;
     source_file_stream.open(source_file);
@@ -252,3 +263,15 @@ int Task::LineNumber() const {
     throw std::runtime_error
         ("could not find task '"+get_name()+"' in file '"+source_file.string()+"'");
 }
+
+bool Task::operator==(const Task& rhs) const {
+    return get_date() == rhs.get_date();
+}
+bool Task::operator<(const Task& rhs) const {
+    return get_date() < rhs.get_date();
+}
+
+bool Task::operator!=(const Task& rhs) const { return !(*this == rhs); }
+bool Task::operator>=(const Task& rhs) const { return !(*this < rhs); }
+bool Task::operator>(const Task& rhs) const { return !(*this < rhs || *this == rhs); }
+bool Task::operator<=(const Task& rhs) const { return *this < rhs && *this == rhs; }
