@@ -4,8 +4,8 @@ test:
 		-fno-omit-frame-pointer -g \
 		-std=c++17 \
 		-lncurses \
-		src/back/*.cpp src/main/*.cpp \
-		-o bin/test
+		-o bin/test \
+		src/back/*.cpp src/main/*.cpp
 
 install:
 	clang++ \
@@ -13,7 +13,8 @@ install:
 		-std=c++17 \
 		-lncurses \
 		-s \
-		src/*.cpp -o ~/.local/bin/norgtask
+		-o ~/.local/bin/norgtask \
+		src/back/*.cpp src/main/*.cpp
 
 asan:
 	clang++ \
@@ -21,7 +22,8 @@ asan:
 		-fno-omit-frame-pointer -g \
 		-std=c++17 \
 		-lncurses \
-		src/*.cpp -o bin/asan
+		-o bin/asan \
+		src/back/*.cpp src/main/*.cpp
 
 tsan:
 	clang++ \
@@ -29,7 +31,8 @@ tsan:
 		-fno-omit-frame-pointer -g \
 		-std=c++17 \
 		-lncurses \
-		src/*.cpp -o bin/tsan
+		-o bin/tsan \
+		src/back/*.cpp src/main/*.cpp
 
 msan:
 	clang++ \
@@ -37,4 +40,5 @@ msan:
 		-fno-omit-frame-pointer -g \
 		-std=c++17 \
 		-lncurses \
-		src/*.cpp -o bin/msan
+		-o bin/msan \
+		src/back/*.cpp src/main/*.cpp

@@ -3,15 +3,18 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <time.h>
+#include <vector>
 
 class Timestamp {
     public:
         Timestamp();
-        Timestamp(bool future);
+        Timestamp(bool future); // future or zerotime
         Timestamp(long unixtime);
         Timestamp(const char datestr[]);
         Timestamp(std::string datestr);
+        // str can be 'yyyy.mm.dd*hh:mm OR +dd*hh:mm'
 
         bool operator<(const Timestamp& rhs) const;
         bool operator<=(const Timestamp& rhs) const;
@@ -19,6 +22,8 @@ class Timestamp {
         bool operator>=(const Timestamp& rhs) const;
         bool operator>(const Timestamp& rhs) const;
         bool operator!=(const Timestamp& rhs) const;
+
+        Timestamp operator+(const Timestamp &rhs) const;
 
         static long current_unixtime();
 
@@ -40,5 +45,8 @@ class Timestamp {
         void TmFromUnix(long unixtime);
         void TmFromStr(std::string datestr);
         struct tm tm;
+        static std::string untruncate(std::string datestr);
+        static std::vector<int> parse_datestr(std::string datestr);
         static long futuretime;
+        static std::string zero_datestr;
 };

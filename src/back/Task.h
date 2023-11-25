@@ -33,9 +33,8 @@ class Task {
         bool operator>(const Task& rhs) const;
         bool operator!=(const Task& rhs) const;
 
-
     private:
-        void Construct();
+        void Construct(std::string definition, std::filesystem::path source_file);
         void Write(bool replace_which[4]) const;
         int LineNumber() const;
 

@@ -5,11 +5,13 @@
 #include "Workspace.h"
 
 #include <filesystem>
+#include <memory>
 #include <vector>
 
 class Tasklist {
     public:
         Tasklist(std::filesystem::path workspace);
+        ~Tasklist();
 
         // deterministic list of tasks, filtered by the filters specified
         std::vector<Task>* Tasks();
@@ -19,16 +21,18 @@ class Tasklist {
 
         enum DateType {
             date_na, // filter should not be applied
+            date_e, //  dates match completely
+
             date_gr, // greater dates match
             date_ge, // greater or equal dates match
             date_ls, // less dates match
             date_le, // less or equal dates match
+
             date_u2y, // up to year, date matches
             date_u2m, // up to month, date matches
             date_u2d, // up to day, date matches
             date_u2h, // up to hour, date matches
-            date_u2n,// up to min, date matches
-            date_e, //  dates match completely
+            // date_u2n, (removed, duplicate of date_e)
         };
 
         enum StringType {
@@ -44,22 +48,24 @@ class Tasklist {
             status_due,
         };
 
-        void set_name_filter(std::string match);
-        void set_folder_filter(std::string match);
-        void set_file_filter(std::string match);
-        void set_tag_filter(std::string match);
         void set_status_filter(DueStatus match);
+        void set_name_filter(std::string match);   void set_name_type(StringType typ);
+        void set_folder_filter(std::string match); void set_folder_type(StringType typ);
+        void set_file_filter(std::string match);   void set_file_type(StringType typ);
+        void set_tag_filter(std::string match);    void set_tag_type(StringType typ);
+        void set_date_filter(Timestamp match);     void set_date_type(DateType typ);
 
-        void set_name_type(StringType typ);
-        void set_folder_type(StringType typ);
-        void set_file_type(StringType typ);
-        void set_tag_type(StringType typ);
+        void clear_filters();
+        void clear_name_filter();
+        void clear_folder_filter();
+        void clear_file_filter();
+        void clear_tag_filter();
+        void clear_date_filter();
+        void clear_status_filter();
 
-        void set_date_filter(Timestamp match);
-        void set_date_type(DateType typ);
-
+        // return true if pattern fuzzy matches into text
     private:
-        Workspace norg_workspace;
+        Workspace* norg_workspace;
         std::vector<Task> tasks_done; // sorted by date, greatest first
         std::vector<Task> tasks_due; // sorted by date, least first
         std::vector<Task> tasks_filtered;
@@ -79,8 +85,8 @@ class Tasklist {
         bool match_date(Task task) const;
         bool match_due(Task task) const;
 
-        // return true if pattern fuzzy matches into text
-        static bool string_fuzzy_match(std::string pattern, std::string text);
+        bool string_fuzzy_match(std::string pattern, std::string text) const;
+        bool string_match(std::string pattern, std::string text, StringType strtype) const;
 
         void Filter(); // apply given filters and regenerate vector
         void InsertUnfiltered(Task new_task); 

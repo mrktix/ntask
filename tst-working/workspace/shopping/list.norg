@@ -18,10 +18,10 @@ this is a cool file
    <shopping>
    {2023.10.17}
    [2024.10.15]
+       (2023.10.15*00.00@02.00)
    @end
 
 * Gaming
   @code rust task
   "become #1 *:;. in valorant" {2020.08.24*16:30}
-  [2023.11.06*21:35]
   @end

@@ -66,8 +66,12 @@ void Task::Construct(std::string definition, std::filesystem::path source_file) 
         }
     }
 
-    // depending on whether task is done or not, parse out the date
-    date_due = Timestamp(due_date_str);
+    // make sure to handle empty string
+    if (due_date_str.empty()) {
+        date_due = Timestamp(true); //futuredate
+    } else {
+        date_due = Timestamp(due_date_str);
+    }
 
     if (done_date_str.empty()) {
         done = false;
